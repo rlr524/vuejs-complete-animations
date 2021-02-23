@@ -1,28 +1,53 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+        <h1>Animations</h1>
+        <hr />
+        <button class="btn btn-primary mb-4" @click="toggleShow">
+          Show Alert
+        </button>
+        <!-- We use v-show here vs v-if because we're guessing that this may get toggled a lot
+        and v-show has a lower toggle cost, though a higher initial render cost because v-show 
+        is simply css display toggle (so loads the element no matter what) vs v-if which is true 
+        conditional rendering (only loads if conditional is met). We can use animations with either.  -->
+        <transition name="alert-fade">
+          <div class="alert alert-info" v-show="show">This is some Info</div>
+        </transition>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+  data() {
+    return {
+      show: true,
+    };
+  },
+  methods: {
+    toggleShow() {
+      this.show = !this.show;
+    },
+  },
+  components: {},
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+/* enter is attached for only one frame at the beginning of the animation; typically we use this to just set an opacity of zero for one frame */
+.alert-fade-enter {
+  opacity: 0;
+}
+.alert-fade-enter-active {
+  transition: opacity 1s;
+}
+.alert-fade-leave {
+}
+.alert-fade-leave-active {
+  transition: opacity 1s;
+  opacity: 0;
 }
 </style>
