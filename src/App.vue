@@ -4,7 +4,11 @@
       <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <h1>Animations</h1>
         <hr />
-        <button class="btn btn-primary mb-4" @click="toggleShow">
+        <button
+          class="btn mb-4"
+          :class="[show ? greenClass : redClass]"
+          @click="toggleShow"
+        >
           Show Alert
         </button>
         <!-- We use v-show here vs v-if because we're guessing that this may get toggled a lot
@@ -18,6 +22,11 @@
         <transition name="slide" type="animation">
           <div class="alert alert-info" v-show="show">This is a Slide</div>
         </transition>
+        <transition name="fade">
+          <div class="alert alert-info" v-if="show" appear>
+            This is some info that Animates on Load
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -29,6 +38,8 @@ export default {
   data() {
     return {
       show: true,
+      redClass: "button-red",
+      greenClass: "button-green",
     };
   },
   methods: {
@@ -75,6 +86,14 @@ export default {
   animation: slide-out 3s ease-out forwards;
   transition: opacity 1s;
   opacity: 0;
+}
+
+.button-red {
+  background-color: red;
+}
+
+.button-green {
+  background-color: green;
 }
 
 @keyframes slide-in {
