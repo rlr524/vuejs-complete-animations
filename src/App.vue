@@ -4,6 +4,12 @@
       <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
         <h1>Animations</h1>
         <hr />
+        <div>
+          <select v-model="alertAnimation" class="form-control">
+            <option value="fade">Fade</option>
+            <option value="slide">Slide</option>
+          </select>
+        </div>
         <button
           class="btn mb-4"
           :class="[show ? greenClass : redClass]"
@@ -15,16 +21,30 @@
         and v-show has a lower toggle cost, though a higher initial render cost because v-show 
         is simply css display toggle (so loads the element no matter what) vs v-if which is true 
         conditional rendering (only loads if conditional is met). We can use animations with either.  -->
-        <transition name="alert-fade">
-          <div class="alert alert-info" v-show="show">This is some Info</div>
+        <transition :name="alertAnimation">
+          <div class="alert alert-info" v-show="show">
+            This is Some Info and it Changes Based on the Selection
+          </div>
         </transition>
         <!-- We can tell Vue which animation type to use from our CSS, animation or transition, using a type property -->
         <transition name="slide" type="animation">
           <div class="alert alert-info" v-show="show">This is a Slide</div>
         </transition>
-        <transition name="fade">
-          <div class="alert alert-info" v-if="show" appear>
+        <transition
+          enter-active-class="animated bounce"
+          leave-active-class="animated shake"
+        >
+          <div class="alert alert-info" v-if="show">
             This is some info that Animates on Load
+          </div>
+        </transition>
+        <!-- The mode has two choices, out-in lets the old element animate out first and in-out is the reverse -->
+        <transition :name="alertAnimation" mode="out-in">
+          <div class="alert alert-info" v-if="show" key="info">
+            This is also some info
+          </div>
+          <div class="alert alert-warning" v-if="!show" key="warning">
+            This is some warning
           </div>
         </transition>
       </div>
@@ -40,6 +60,7 @@ export default {
       show: true,
       redClass: "button-red",
       greenClass: "button-green",
+      alertAnimation: "fade",
     };
   },
   methods: {
@@ -52,19 +73,22 @@ export default {
 </script>
 
 <style>
+select {
+  margin-bottom: 1rem;
+}
 /* enter is attached for only one frame at the beginning of the animation; typically we use this to just set an opacity of zero for one frame */
-.alert-fade-enter {
+.fade-enter {
   opacity: 0;
 }
 
-.alert-fade-enter-active {
+.fade-enter-active {
   transition: opacity 1s;
 }
 
 /* .alert-fade-leave {
 } */
 
-.alert-fade-leave-active {
+.fade-leave-active {
   transition: opacity 1s;
   opacity: 0;
 }
@@ -83,7 +107,20 @@ export default {
 } */
 
 .slide-leave-active {
-  animation: slide-out 3s ease-out forwards;
+  animation: slide-out 1s ease-out forwards;
+  transition: opacity 1s;
+  opacity: 0;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 5s;
+}
+
+.fade-leave-active {
   transition: opacity 1s;
   opacity: 0;
 }
