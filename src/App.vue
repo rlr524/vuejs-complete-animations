@@ -5,7 +5,7 @@
         <h1>Animations</h1>
         <hr />
         <div>
-          <select v-model="alertAnimation" class="form-control">
+          <select v-model="alertAnimation" class="form-control mt-4 mb-4">
             <option value="fade">Fade</option>
             <option value="slide">Slide</option>
           </select>
@@ -47,35 +47,123 @@
             This is some warning
           </div>
         </transition>
+        <hr />
+        <hr />
+        <button class="btn btn-primary" @click="load = !load">
+          Load / Remove Element (Using Js)
+        </button>
+        <!-- :css="false" tells Vue to not look for css classes, we're not using them in this case -->
+        <transition
+          @before-enter="beforeEnter"
+          @enter="enter"
+          @after-enter="afterEnter"
+          @enter-cancelled="enterCancelled"
+          @before-leave="beforeLeave"
+          @leave="leave"
+          @after-leave="afterLeave"
+          @leave-cancelled="leaveCancelled"
+          :css="false"
+        >
+          <div
+            class="mt-4"
+            style="width: 300px; height: 100px; background-color: lightgreen"
+            v-if="load"
+          ></div>
+        </transition>
+        <hr />
+        <hr />
+        <button class="btn btn-primary mb-4" @click="changeAlert">
+          Change Alert
+        </button>
+        <transition name="fade" mode="out-in">
+          <component :is="selectedComponent"></component>
+        </transition>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Danger from "@/components/Danger.vue";
+import Success from "@/components/Success.vue";
+
 export default {
   name: "App",
+  components: {
+    appDanger: Danger,
+    appSuccess: Success,
+  },
   data() {
     return {
-      show: true,
+      show: false,
+      load: false,
       redClass: "button-red",
       greenClass: "button-green",
       alertAnimation: "fade",
+      elementWidth: 100,
+      selectedComponent: "app-danger",
     };
   },
   methods: {
+    changeAlert() {
+      this.selectedComponent === "app-danger"
+        ? (this.selectedComponent = "app-success")
+        : (this.selectedComponent = "app-danger");
+    },
     toggleShow() {
       this.show = !this.show;
     },
+    beforeEnter(el) {
+      console.log("beforeEnter");
+      this.elementWidth = 100;
+      el.style.width = this.elementWidth + "px";
+    },
+    enter(el, done) {
+      console.log("enter");
+      let round = 1;
+      const interval = setInterval(() => {
+        el.style.width = this.elementWidth + round * 10 + "px";
+        round++;
+        if (round > 20) {
+          clearInterval(interval);
+          done();
+        }
+      }, 20);
+    },
+    afterEnter() {
+      console.log("afterEnter");
+    },
+    enterCancelled() {
+      console.log("enterCancelled");
+    },
+    beforeLeave(el) {
+      console.log("beforeLeave");
+      this.elementWidth = 300;
+      el.style.width = this.elementWidth + "px";
+    },
+    leave(el, done) {
+      console.log("leave");
+      let round = 1;
+      const interval = setInterval(() => {
+        el.style.width = this.elementWidth - round * 10 + "px";
+        round++;
+        if (round > 20) {
+          clearInterval(interval);
+          done();
+        }
+      }, 20);
+    },
+    afterLeave() {
+      console.log("afterLeave");
+    },
+    leaveCancelled() {
+      console.log("leaveCancelled");
+    },
   },
-  components: {},
 };
 </script>
 
 <style>
-select {
-  margin-bottom: 1rem;
-}
 /* enter is attached for only one frame at the beginning of the animation; typically we use this to just set an opacity of zero for one frame */
 .fade-enter {
   opacity: 0;
